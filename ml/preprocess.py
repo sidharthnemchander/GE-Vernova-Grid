@@ -89,7 +89,7 @@ def load_class_dataset(filepath: str) -> tuple[pd.DataFrame, pd.Series, pd.Serie
         lambda row: FAULT_TYPE_MAP.get(tuple(row), "Unknown"), axis=1
     )
 
-    print(f"   classData loaded: {len(df)} rows")
+    print(f"   classData ed: {len(df)} rows")
     print(f"   Fault types found:\n{y_type.value_counts().to_string()}")
 
     return X, y_binary, y_type
@@ -136,6 +136,6 @@ def create_sequences(
 
 def get_dataset_stats(X: pd.DataFrame, y: pd.Series) -> None:
     """Print a quick sanity check summary."""
-    print("\n📊 Dataset Statistics:")
+    print("\n Dataset Statistics:")
     print(X.describe().round(3).to_string())
     print(f"\nClass balance — Normal: {(y==0).sum()} | Fault: {(y==1).sum()}")
