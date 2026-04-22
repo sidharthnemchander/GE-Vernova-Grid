@@ -131,7 +131,7 @@ def train_lstm(
         # Early stopping
         if avg_val < best_val_loss:
             best_val_loss = avg_val
-            torch.save(model.state_dict(), "models/lstm_best.pt")
+            torch.save(model.state_dict(), "../models/lstm_best.pt")
             patience_counter = 0
         else:
             patience_counter += 1
@@ -140,7 +140,7 @@ def train_lstm(
                 break
 
     # Load best weights before returning
-    model.load_state_dict(torch.load("models/lstm_best.pt", weights_only=True))
+    model.load_state_dict(torch.load("../models/lstm_best.pt", weights_only=True))
     return model, train_losses
 
 
@@ -175,7 +175,7 @@ def set_threshold(normal_errors: np.ndarray, percentile: float = 95) -> float:
     return threshold
 
 
-def load_model(n_features: int, path: str = "models/lstm_best.pt") -> LSTMAutoencoder:
+def load_model(n_features: int, path: str = "../models/lstm_best.pt") -> LSTMAutoencoder:
     model = LSTMAutoencoder(n_features=n_features)
     model.load_state_dict(torch.load(path, weights_only=True))
     model.eval()
