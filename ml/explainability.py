@@ -22,7 +22,7 @@ def plot_shap_summary(
     shap_values: np.ndarray,
     X_scaled: np.ndarray,
     feature_names: list[str],
-    save_path: str = "models/shap_summary.png",
+    save_path: str = "../models/shap_summary.png",
 ) -> None:
     """Overall: which sensors matter most across ALL anomalies?"""
     shap.summary_plot(
@@ -60,7 +60,7 @@ def explain_single_anomaly(
     shap.waterfall_plot(explanation, show=False)
     plt.title(f"Why was reading #{sample_index} flagged as anomalous?")
     plt.tight_layout()
-    path = save_path or f"models/explanation_{sample_index}.png"
+    path = save_path or f"../models/explanation_{sample_index}.png"
     plt.savefig(path, dpi=150)
     plt.close()
     print(f" Explanation saved → {path}")
