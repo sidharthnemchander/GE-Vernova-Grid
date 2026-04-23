@@ -12,7 +12,7 @@ def train_isolation_forest(X_scaled: np.ndarray) -> IsolationForest:
     """
     model = IsolationForest(
         n_estimators=300,       # more trees = more stable scores
-        contamination=0.05,     # assume 5% of readings are faults
+        contamination=0.45,
         max_samples="auto",
         random_state=42,
         n_jobs=-1,              # use all CPU cores
