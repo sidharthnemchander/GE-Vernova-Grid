@@ -88,13 +88,14 @@ def run_prediction(readings_array: np.ndarray) -> dict:
     if not store.loaded:
         raise RuntimeError("Models not loaded. Call load_all_models() first.")
 
-    # Scale
     X_scaled = store.scaler.transform(readings_array).astype(np.float32)
 
-    # Isolation Forest on flat data
+    MIN_ROWS = 20
+    if len(X_scaled) < MIN_ROWS:
+        repeats = int(np.ceil(MIN_ROWS / len(X_scaled)))
+        X_scaled = np.tile(X_scaled, (repeats, 1))[:MIN_ROWS]
+    
     _, if_labels = get_anomaly_scores(store.if_model, X_scaled)
-
-    # LSTM on sequences
     X_seq, _ = create_sequences(
         X_scaled,
         np.zeros(len(X_scaled)),   # dummy labels, not used for inference
@@ -106,7 +107,6 @@ def run_prediction(readings_array: np.ndarray) -> dict:
 
     lstm_errors = get_reconstruction_errors(store.lstm_model, X_seq)
 
-    # Align IF labels to sequence window
     if_labels_seq = if_labels[TIMESTEPS:]
 
     # Hybrid

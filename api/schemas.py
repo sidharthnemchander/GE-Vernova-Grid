@@ -28,9 +28,8 @@ class SensorReading(BaseModel):
 
 
 class BatchReadings(BaseModel):
-    """A sequence of sensor readings (needs at least 10 for LSTM window)."""
     readings: list[SensorReading] = Field(
-        ..., min_length=10, description="Minimum 10 readings required for LSTM"
+        ..., min_length=1, description="Send at least 1 reading — padded internally"
     )
 
 

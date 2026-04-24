@@ -12,7 +12,7 @@ async def lifespan(app: FastAPI):
     """Load models when API starts, clean up when it stops."""
     load_all_models()
     yield
-    print("🛑 Shutting down GridMind API")
+    print(" Shutting down GridMind API")
 
 
 app = FastAPI(
