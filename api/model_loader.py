@@ -1,7 +1,7 @@
 import sys
 import os
 sys.path.append(os.path.abspath(".."))
-
+import pandas as pd
 import joblib
 import numpy as np
 import torch
@@ -32,7 +32,6 @@ class ModelStore:
     loaded:      bool             = False
 
 
-# Global singleton — imported by routes
 store = ModelStore()
 
 
@@ -65,7 +64,6 @@ def load_all_models() -> None:
     store.scaler = joblib.load(os.path.join(MODELS_DIR, "scaler.pkl"))
     print("   Scaler loaded")
 
-    # Threshold — stored in a small file we'll create below
     threshold_path = os.path.join(MODELS_DIR, "threshold.txt")
     if os.path.exists(threshold_path):
         with open(threshold_path) as f:
@@ -88,7 +86,9 @@ def run_prediction(readings_array: np.ndarray) -> dict:
     if not store.loaded:
         raise RuntimeError("Models not loaded. Call load_all_models() first.")
 
-    X_scaled = store.scaler.transform(readings_array).astype(np.float32)
+    X_scaled = store.scaler.transform(
+    pd.DataFrame(readings_array, columns=SENSOR_COLS)
+).astype(np.float32)
 
     MIN_ROWS = 20
     if len(X_scaled) < MIN_ROWS:

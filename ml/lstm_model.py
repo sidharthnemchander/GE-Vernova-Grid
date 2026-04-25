@@ -18,7 +18,6 @@ class LSTMAutoencoder(nn.Module):
         super().__init__()
         self.n_features = n_features
 
-        # Encoder: sequence → single vector
         self.encoder_lstm = nn.LSTM(
             input_size=n_features,
             hidden_size=hidden_dim,
@@ -28,7 +27,6 @@ class LSTMAutoencoder(nn.Module):
         )
         self.encoder_fc = nn.Linear(hidden_dim, latent_dim)
 
-        # Decoder: single vector → reconstructed sequence
         self.decoder_fc = nn.Linear(latent_dim, hidden_dim)
         self.decoder_lstm = nn.LSTM(
             input_size=hidden_dim,
@@ -72,7 +70,6 @@ def train_lstm(
     X_tensor = torch.tensor(X_normal_seq, dtype=torch.float32)
     dataset = TensorDataset(X_tensor, X_tensor)  # input = target (autoencoder)
 
-    # 90/10 train/val split
     val_size = int(0.1 * len(dataset))
     train_size = len(dataset) - val_size
     train_ds, val_ds = torch.utils.data.random_split(dataset, [train_size, val_size])
@@ -85,7 +82,6 @@ def train_lstm(
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     criterion = nn.L1Loss()  # MAE loss - more robust to outliers than MSE
 
-    # Learning rate scheduler: reduce lr if val loss plateaus
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
         optimizer, patience=5, factor=0.5
     )
@@ -139,7 +135,6 @@ def train_lstm(
                 print(f"Early stopping at epoch {epoch}")
                 break
 
-    # Load best weights before returning
     model.load_state_dict(torch.load("../models/lstm_best.pt", weights_only=True))
     return model, train_losses
 

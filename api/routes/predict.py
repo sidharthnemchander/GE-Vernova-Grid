@@ -1,4 +1,3 @@
-# api/routes/predict.py
 import numpy as np
 from fastapi import APIRouter, HTTPException
 from api.schemas import BatchReadings, PredictionResponse, SensorContribution

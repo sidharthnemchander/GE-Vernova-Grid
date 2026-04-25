@@ -1,67 +1,87 @@
 import joblib
 import numpy as np
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 from sklearn.preprocessing import MinMaxScaler
 from ml.preprocess import load_class_dataset, SENSOR_COLS
 
-X, _, y_type = load_class_dataset("data/raw/classData.csv")
-scaler = joblib.load("models/scaler.pkl")
 
-def add_features(X_df):
+def add_features(X_df: pd.DataFrame) -> pd.DataFrame:
     """
-    Add engineered features that help separate electrically similar faults.
-    Three Phase + Ground has ground current (zero sequence) unlike Phase ABC Fault.
+    Feature engineering for fault type classification.
+
     """
     X_new = X_df.copy()
-    
+
     X_new["I_zero_seq"] = (X_df["Ia"] + X_df["Ib"] + X_df["Ic"]) / 3
-    
-    X_new["I_imbalance"] = X_df[["Ia","Ib","Ic"]].std(axis=1)
-    X_new["V_imbalance"] = X_df[["Va","Vb","Vc"]].std(axis=1)
-    
-    X_new["S_a"] = np.abs(X_df["Ia"] * X_df["Va"])
-    X_new["S_b"] = np.abs(X_df["Ib"] * X_df["Vb"])
-    X_new["S_c"] = np.abs(X_df["Ic"] * X_df["Vc"])
-    
+
+    X_new["I_imbalance"] = X_df[["Ia", "Ib", "Ic"]].std(axis=1, ddof=1)
+    X_new["V_imbalance"] = X_df[["Va", "Vb", "Vc"]].std(axis=1, ddof=1)
+
+    X_new["S_a"] = (X_df["Ia"] * X_df["Va"]).abs()
+    X_new["S_b"] = (X_df["Ib"] * X_df["Vb"]).abs()
+    X_new["S_c"] = (X_df["Ic"] * X_df["Vc"]).abs()
+
     X_new["S_total"] = X_new["S_a"] + X_new["S_b"] + X_new["S_c"]
-    
-    X_new["V_depression"] = X_df[["Va","Vb","Vc"]].min(axis=1)
-    
+
+    X_new["V_depression"] = X_df[["Va", "Vb", "Vc"]].min(axis=1)
+
     return X_new
 
-# Apply feature engineering
-X_engineered = add_features(X)
-print(f"Features: {list(X_engineered.columns)}")
 
-original_scaled = scaler.transform(X_engineered[SENSOR_COLS])
-new_features = X_engineered.drop(columns=SENSOR_COLS).values
-new_scaler = MinMaxScaler()
-new_features_scaled = new_scaler.fit_transform(new_features)
-X_final = np.hstack([original_scaled, new_features_scaled])
+def main():
+    print(" Loading classData.csv...")
+    X, _, y_type = load_class_dataset("data/raw/classData.csv")
+    print(f" {len(X)} rows loaded\n")
 
-X_train, X_test, y_train, y_test = train_test_split(
-    X_final, y_type,
-    test_size=0.2,
-    random_state=42,
-    stratify=y_type,
-)
+    scaler = joblib.load("models/scaler.pkl")
 
-from sklearn.ensemble import GradientBoostingClassifier
-clf = GradientBoostingClassifier(
-    n_estimators=300,
-    max_depth=5,
-    learning_rate=0.05,
-    random_state=42,
-)
-clf.fit(X_train, y_train)
+    X_engineered = add_features(X)
 
-y_pred = clf.predict(X_test)
-print("\n Classification Report:")
-print(classification_report(y_test, y_pred))
+    original_scaled = scaler.transform(X_engineered[SENSOR_COLS])
 
-joblib.dump(clf, "models/fault_classifier.pkl")
-joblib.dump(new_scaler, "models/feature_scaler.pkl")
-print(" Saved fault_classifier.pkl and feature_scaler.pkl")
+    new_feature_cols = [
+        "I_zero_seq", "I_imbalance", "V_imbalance",
+        "S_a", "S_b", "S_c", "S_total", "V_depression"
+    ]
+    new_features_df = X_engineered[new_feature_cols]
+    feat_scaler = MinMaxScaler()
+    new_features_scaled = feat_scaler.fit_transform(new_features_df)
+
+    X_final = np.hstack([original_scaled, new_features_scaled])
+
+    joblib.dump(new_feature_cols, "models/feature_col_order.pkl")
+    print(f"Feature columns: {new_feature_cols}\n")
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X_final, y_type,
+        test_size=0.2,
+        random_state=42,
+        stratify=y_type,
+    )
+
+    print(" Training GradientBoosting classifier...")
+    clf = GradientBoostingClassifier(
+        n_estimators=300,
+        max_depth=5,
+        learning_rate=0.05,
+        random_state=42,
+    )
+    clf.fit(X_train, y_train)
+
+    y_pred = clf.predict(X_test)
+    print("\n Classification Report:")
+    print(classification_report(y_test, y_pred))
+
+    joblib.dump(clf,         "models/fault_classifier.pkl")
+    joblib.dump(feat_scaler, "models/feature_scaler.pkl")
+    print(" fault_classifier.pkl saved")
+    print(" feature_scaler.pkl saved")
+    print(" feature_col_order.pkl saved")
+    print("\n🚀 Restart uvicorn after this.")
+
+
+if __name__ == "__main__":
+    main()

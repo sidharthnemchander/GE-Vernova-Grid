@@ -6,12 +6,12 @@ const SENSOR_COLS = ["Ia", "Ib", "Ic", "Va", "Vb", "Vc"];
 const UNITS = { Ia: "A", Ib: "A", Ic: "A", Va: "p.u.", Vb: "p.u.", Vc: "p.u." };
 
 const SAMPLE_NORMAL = {
-  Ia: -170.47,
-  Ib: 9.22,
-  Ic: 161.25,
-  Va: 0.0545,
-  Vb: -0.6599,
-  Vc: 0.6054,
+  Ia: -47.7558,
+  Ib: 61.5296,
+  Ic: -17.4326,
+  Va: -0.5165,
+  Vb: -0.0183,
+  Vc: 0.5348,
 };
 
 const SAMPLE_FAULT = {
@@ -68,26 +68,19 @@ export default function Predict() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const buildReadings = () => {
-    return Array.from({ length: 20 }, () => {
-      const jitter = (max) => (Math.random() - 0.5) * max;
-      return {
-        Ia: values.Ia + jitter(2),
-        Ib: values.Ib + jitter(0.5),
-        Ic: values.Ic + jitter(2),
-        Va: values.Va + jitter(0.002),
-        Vb: values.Vb + jitter(0.002),
-        Vc: values.Vc + jitter(0.002),
-      };
-    });
-  };
-
   const handlePredict = async () => {
     setLoading(true);
     setError(null);
     setResult(null);
     try {
-      const readings = buildReadings();
+      const isFaultLike =
+        Math.abs(values.Ia) > 250 || Math.abs(values.Va) > 0.35;
+      const sampleRes = await fetch(
+        `http://localhost:8000/sample-window/?fault=${isFaultLike}`,
+      );
+      const sampleData = await sampleRes.json();
+
+      const readings = [...sampleData.readings.slice(0, 19), { ...values }];
       const res = await api.predict(readings);
       setResult(res);
     } catch (e) {

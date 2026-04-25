@@ -18,19 +18,7 @@ import numpy as np
 
 #     return combined, confidence
 """
-"""
-def hybrid_predict(if_labels, lstm_errors, lstm_threshold):
-    
-    lstm_labels = (lstm_errors > lstm_threshold).astype(int)
-    
-    combined = np.logical_or(if_labels, lstm_labels).astype(int)
-    
-    normalized_error = (lstm_errors - lstm_errors.min()) / \
-                       (lstm_errors.max() - lstm_errors.min() + 1e-8)
-    confidence = np.where(combined == 1, normalized_error, 0.0)
-    
-    return combined, confidence
-"""
+
 def hybrid_predict(if_labels, lstm_errors, lstm_threshold):
     """
     At least one model should agree there is an anomaly.

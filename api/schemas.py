@@ -1,6 +1,4 @@
 from pydantic import BaseModel, Field
-from typing import Literal
-
 
 # ── Incoming 
 
@@ -44,7 +42,7 @@ class SensorContribution(BaseModel):
 class PredictionResponse(BaseModel):
     is_fault: bool
     confidence: float
-    severity: Literal[" CRITICAL", " HIGH", " MEDIUM", " LOW", " NORMAL"]
+    severity: str
     top_sensors: list[SensorContribution]
     lstm_error: float
     threshold: float

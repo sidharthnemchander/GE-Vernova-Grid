@@ -26,12 +26,12 @@ const SAMPLE_READINGS = [
   {
     label: "Normal",
     values: {
-      Ia: -170.47,
-      Ib: 9.22,
-      Ic: 161.25,
-      Va: 0.0545,
-      Vb: -0.6599,
-      Vc: 0.6054,
+      Ia: 61.81,
+      Ib: -22.86,
+      Ic: 21.1,
+      Va: 0.3663,
+      Vb: -0.5672,
+      Vc: 0.2009,
     },
   },
   {
@@ -48,12 +48,12 @@ const SAMPLE_READINGS = [
   {
     label: "Three Phase Fault",
     values: {
-      Ia: -151.29,
-      Ib: -9.68,
-      Ic: 85.8,
-      Va: 0.4007,
-      Vb: -0.1329,
-      Vc: -0.2678,
+      Ia: -342.24,
+      Ib: 224.82,
+      Ic: 119.15,
+      Va: 0.0953,
+      Vb: -0.0023,
+      Vc: -0.093,
     },
   },
 ];

@@ -13,7 +13,6 @@ function useRealSensors() {
   useEffect(() => {
     const poll = async () => {
       try {
-        // Step 1: Get real rows from dataset (alternates normal/fault)
         const sampleRes = await fetch("http://localhost:8000/sample-window/");
         const sampleData = await sampleRes.json();
 
@@ -21,7 +20,6 @@ function useRealSensors() {
 
         const readings = sampleData.readings;
 
-        // Step 2: Send those real rows to /predict/
         const result = await api.predict(readings);
 
         const snap = readings[readings.length - 1];

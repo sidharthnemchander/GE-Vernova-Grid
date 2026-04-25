@@ -1,7 +1,6 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
 from api.model_loader import load_all_models, store
 from api.schemas import HealthResponse
 from api.routes import predict, explain, alerts, fault_type

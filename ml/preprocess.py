@@ -36,9 +36,8 @@ def load_detect_dataset(filepath: str) -> tuple[pd.DataFrame, pd.Series]:
     """
     df = pd.read_csv(filepath)
 
-    # strip whitespace, handle the odd comma trailing
     df.columns = [c.strip() for c in df.columns]
-    # Drop any unnamed/empty columns
+
     df = df.loc[:, ~df.columns.str.startswith("Unnamed")]
     df.dropna(how="all", axis=1, inplace=True)
 
@@ -81,10 +80,8 @@ def load_class_dataset(filepath: str) -> tuple[pd.DataFrame, pd.Series, pd.Serie
 
     X = df[SENSOR_COLS].copy()
 
-    # Binary: is there ANY fault?
     y_binary = (df[fault_flag_cols].sum(axis=1) > 0).astype(int)
 
-    # Human-readable fault type
     y_type = df[fault_flag_cols].apply(
         lambda row: FAULT_TYPE_MAP.get(tuple(row), "Unknown"), axis=1
     )
@@ -95,7 +92,7 @@ def load_class_dataset(filepath: str) -> tuple[pd.DataFrame, pd.Series, pd.Serie
     return X, y_binary, y_type
 
 
-# ── Shared utilities ─────────────────────────────────────────────────────────
+# ── Shared utilities 
 
 def scale_data(
     X: pd.DataFrame,
