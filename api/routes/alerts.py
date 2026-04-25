@@ -8,7 +8,7 @@ router = APIRouter(prefix="/alerts", tags=["Alerts"])
 
 # In-memory alert store
 _alert_store: list[AlertRecord] = []
-_alert_counter = 0
+_alert_counter : int= 0
 
 
 @router.get("/", response_model=list[AlertRecord])

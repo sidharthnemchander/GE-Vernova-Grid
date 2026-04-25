@@ -5,7 +5,6 @@ import { api, severityClass } from "../lib/api";
 const SENSOR_COLS = ["Ia", "Ib", "Ic", "Va", "Vb", "Vc"];
 const UNITS = { Ia: "A", Ib: "A", Ic: "A", Va: "p.u.", Vb: "p.u.", Vc: "p.u." };
 
-// Sample normal reading pre-filled for quick demo
 const SAMPLE_NORMAL = {
   Ia: -170.47,
   Ib: 9.22,
@@ -15,7 +14,6 @@ const SAMPLE_NORMAL = {
   Vc: 0.6054,
 };
 
-// Sample fault reading
 const SAMPLE_FAULT = {
   Ia: -151.29,
   Ib: -9.68,
@@ -70,8 +68,19 @@ export default function Predict() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Build 10 identical readings so LSTM window is satisfied
-  const buildReadings = () => Array(20).fill({ ...values });
+  const buildReadings = () => {
+    return Array.from({ length: 20 }, () => {
+      const jitter = (max) => (Math.random() - 0.5) * max;
+      return {
+        Ia: values.Ia + jitter(2),
+        Ib: values.Ib + jitter(0.5),
+        Ic: values.Ic + jitter(2),
+        Va: values.Va + jitter(0.002),
+        Vb: values.Vb + jitter(0.002),
+        Vc: values.Vc + jitter(0.002),
+      };
+    });
+  };
 
   const handlePredict = async () => {
     setLoading(true);

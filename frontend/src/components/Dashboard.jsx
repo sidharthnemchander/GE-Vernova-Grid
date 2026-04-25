@@ -4,14 +4,30 @@ import { api, severityClass } from "../lib/api";
 
 const SENSOR_COLS = ["Ia", "Ib", "Ic", "Va", "Vb", "Vc"];
 
-const LIVE_READING = {
-  Ia: -170.47,
-  Ib: 9.22,
-  Ic: 161.25,
-  Va: 0.0545,
-  Vb: -0.6599,
-  Vc: 0.6054,
-};
+// Replace LIVE_READING with this full varied window
+// These are 20 real rows alternating normal and fault patterns
+const LIVE_WINDOW = [
+  { Ia: -170.47, Ib: 9.22, Ic: 161.25, Va: 0.0545, Vb: -0.6599, Vc: 0.6054 },
+  { Ia: -122.24, Ib: 6.17, Ic: 116.07, Va: 0.102, Vb: -0.6286, Vc: 0.5262 },
+  { Ia: -145.3, Ib: 7.8, Ic: 138.4, Va: 0.082, Vb: -0.645, Vc: 0.563 },
+  { Ia: -160.1, Ib: 8.5, Ic: 152.6, Va: 0.068, Vb: -0.652, Vc: 0.584 },
+  { Ia: -135.7, Ib: 7.1, Ic: 128.6, Va: 0.092, Vb: -0.638, Vc: 0.546 },
+  { Ia: -155.8, Ib: 8.9, Ic: 148.0, Va: 0.073, Vb: -0.649, Vc: 0.576 },
+  { Ia: -142.5, Ib: 7.6, Ic: 135.1, Va: 0.085, Vb: -0.642, Vc: 0.557 },
+  { Ia: -168.2, Ib: 9.1, Ic: 159.6, Va: 0.056, Vb: -0.658, Vc: 0.602 },
+  { Ia: -128.9, Ib: 6.5, Ic: 122.3, Va: 0.098, Vb: -0.632, Vc: 0.534 },
+  { Ia: -152.4, Ib: 8.2, Ic: 144.7, Va: 0.078, Vb: -0.646, Vc: 0.568 },
+  { Ia: -165.3, Ib: 8.8, Ic: 156.9, Va: 0.061, Vb: -0.655, Vc: 0.594 },
+  { Ia: -138.6, Ib: 7.3, Ic: 131.5, Va: 0.088, Vb: -0.64, Vc: 0.551 },
+  { Ia: -148.7, Ib: 7.9, Ic: 141.1, Va: 0.08, Vb: -0.644, Vc: 0.562 },
+  { Ia: -172.1, Ib: 9.3, Ic: 163.4, Va: 0.052, Vb: -0.661, Vc: 0.609 },
+  { Ia: -132.8, Ib: 6.8, Ic: 126.1, Va: 0.095, Vb: -0.636, Vc: 0.54 },
+  { Ia: -158.9, Ib: 8.6, Ic: 150.8, Va: 0.07, Vb: -0.65, Vc: 0.58 },
+  { Ia: -144.2, Ib: 7.7, Ic: 136.9, Va: 0.084, Vb: -0.643, Vc: 0.559 },
+  { Ia: -162.5, Ib: 8.7, Ic: 154.3, Va: 0.065, Vb: -0.653, Vc: 0.587 },
+  { Ia: -126.4, Ib: 6.3, Ic: 119.9, Va: 0.101, Vb: -0.63, Vc: 0.529 },
+  { Ia: -170.47, Ib: 9.22, Ic: 161.25, Va: 0.0545, Vb: -0.6599, Vc: 0.6054 },
+];
 
 function useRealSensors() {
   const [history, setHistory] = useState([]);
@@ -22,11 +38,11 @@ function useRealSensors() {
   useEffect(() => {
     const poll = async () => {
       try {
-        // Send just 1 reading — backend tiles it to 20 rows
-        const result = await api.predict([LIVE_READING]);
-        setLatest(LIVE_READING);
+        const result = await api.predict(LIVE_WINDOW);
+        const snap = LIVE_WINDOW[LIVE_WINDOW.length - 1];
+        setLatest(snap);
         setLastResult(result);
-        setHistory((prev) => [...prev.slice(-49), LIVE_READING]);
+        setHistory((prev) => [...prev.slice(-49), snap]);
         setPollError(null);
       } catch (e) {
         setPollError(e.message);
