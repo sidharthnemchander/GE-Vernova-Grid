@@ -6,12 +6,12 @@ const SENSOR_COLS = ["Ia", "Ib", "Ic", "Va", "Vb", "Vc"];
 const UNITS = { Ia: "A", Ib: "A", Ic: "A", Va: "p.u.", Vb: "p.u.", Vc: "p.u." };
 
 const SAMPLE_NORMAL = {
-  Ia: -47.7558,
-  Ib: 61.5296,
-  Ic: -17.4326,
-  Va: -0.5165,
-  Vb: -0.0183,
-  Vc: 0.5348,
+  Ia: -170.4721,
+  Ib: 9.2196,
+  Ic: 161.2525,
+  Va: -0.0544,
+  Vb: -0.6599,
+  Vc: 0.6054,
 };
 
 const SAMPLE_FAULT = {

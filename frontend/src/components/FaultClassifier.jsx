@@ -3,23 +3,14 @@ import { api } from "../lib/api";
 
 const SENSOR_COLS = ["Ia", "Ib", "Ic", "Va", "Vb", "Vc"];
 
+// Keys now EXACTLY match your dataset strings
 const FAULT_COLORS = {
-  "No Fault": "var(--green)",
-  "Phase A Fault": "var(--amber)",
-  "Phase B Fault": "var(--amber)",
-  "Phase C Fault": "var(--amber)",
-  "Phase AB Fault": "var(--red)",
-  "Phase BC Fault": "var(--red)",
-  "Phase AC Fault": "var(--red)",
-  "Phase ABC Fault": "var(--red)",
-  "Ground Fault": "var(--blue)",
-  "Phase A + Ground": "var(--red)",
-  "Phase B + Ground": "var(--red)",
-  "Phase C + Ground": "var(--red)",
-  "Phase AB + Ground": "var(--red)",
-  "Phase BC + Ground": "var(--red)",
-  "Phase AC + Ground": "var(--red)",
-  "Three Phase + Ground": "var(--red)",
+  "No Fault": "#22c55e", // green
+  "Phase A + Ground": "#f59e0b", // amber
+  "Phase AB + Ground": "#ef4444", // red
+  "Phase ABC Fault": "#8b5cf6", // purple
+  "Phase BC Fault": "#3b82f6", // blue
+  "Three Phase + Ground": "#ec4899", // pink
 };
 
 const SAMPLE_READINGS = [
@@ -35,7 +26,7 @@ const SAMPLE_READINGS = [
     },
   },
   {
-    label: "Phase A Fault",
+    label: "Phase A + Ground",
     values: {
       Ia: -336.19,
       Ib: -76.28,
@@ -46,7 +37,7 @@ const SAMPLE_READINGS = [
     },
   },
   {
-    label: "Three Phase Fault",
+    label: "Three Phase + Ground",
     values: {
       Ia: -342.24,
       Ib: 224.82,
@@ -78,9 +69,10 @@ export default function FaultClassifier() {
     }
   };
 
+  // Uses the exact string to grab the color, defaulting to gray if not found
   const faultColor = result
-    ? FAULT_COLORS[result.fault_type] || "var(--amber)"
-    : "var(--amber)";
+    ? FAULT_COLORS[result.fault_type] || "#9ca3af"
+    : "#9ca3af";
 
   return (
     <div>
@@ -343,21 +335,19 @@ export default function FaultClassifier() {
                       lineHeight: 1.8,
                     }}
                   >
+                    {/* Exact 1-to-1 matching for your 6 categories */}
                     {result.fault_type === "No Fault" &&
                       "All three phases are operating within normal parameters. No protective action required."}
-                    {result.fault_type?.includes("Ground") &&
-                      "A ground fault indicates insulation breakdown or physical contact between a conductor and earth. Immediate inspection recommended."}
-                    {result.fault_type?.includes("Three Phase") &&
-                      "A three-phase fault is the most severe type — all three conductors are involved. This requires emergency protective relay action."}
-                    {result.fault_type?.includes("Phase A") &&
-                      !result.fault_type?.includes("Ground") &&
-                      "Single phase fault on Phase A. Check Phase A conductor insulation and protective relay status."}
-                    {result.fault_type?.includes("Phase B") &&
-                      !result.fault_type?.includes("Ground") &&
-                      "Single phase fault on Phase B. Check Phase B conductor insulation and protective relay status."}
-                    {result.fault_type?.includes("Phase C") &&
-                      !result.fault_type?.includes("Ground") &&
-                      "Single phase fault on Phase C. Check Phase C conductor insulation and protective relay status."}
+                    {result.fault_type === "Phase A + Ground" &&
+                      "A ground fault on Phase A indicates insulation breakdown or physical contact between conductor A and earth. Immediate inspection recommended."}
+                    {result.fault_type === "Phase AB + Ground" &&
+                      "A double line-to-ground fault involving Phases A and B. High severity, causes significant system unbalance."}
+                    {result.fault_type === "Phase ABC Fault" &&
+                      "A three-phase clear fault (no ground). All three conductors are shorted together. Requires emergency protective relay action."}
+                    {result.fault_type === "Phase BC Fault" &&
+                      "A line-to-line fault between Phases B and C. Check conductors for physical shorts or phase-to-phase insulation failure."}
+                    {result.fault_type === "Three Phase + Ground" &&
+                      "The most severe fault type — all three conductors are shorted to each other and to ground. Emergency breaker trip required."}
                   </div>
                 </div>
               </>

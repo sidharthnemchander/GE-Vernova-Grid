@@ -80,7 +80,7 @@ def main():
     print(" fault_classifier.pkl saved")
     print(" feature_scaler.pkl saved")
     print(" feature_col_order.pkl saved")
-    print("\n🚀 Restart uvicorn after this.")
+    print("\n Restart uvicorn after this.")
 
 
 if __name__ == "__main__":
