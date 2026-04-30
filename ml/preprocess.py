@@ -7,20 +7,10 @@ SENSOR_COLS = ["Ia", "Ib", "Ic", "Va", "Vb", "Vc"]
 
 FAULT_TYPE_MAP = {
     (0, 0, 0, 0): "No Fault",
-    (0, 0, 0, 1): "Phase A Fault",
-    (0, 0, 1, 0): "Phase B Fault",
-    (0, 0, 1, 1): "Phase AB Fault",
-    (0, 1, 0, 0): "Phase C Fault",
-    (0, 1, 0, 1): "Phase AC Fault",
     (0, 1, 1, 0): "Phase BC Fault",
     (0, 1, 1, 1): "Phase ABC Fault",
-    (1, 0, 0, 0): "Ground Fault",
     (1, 0, 0, 1): "Phase A + Ground",
-    (1, 0, 1, 0): "Phase B + Ground",
     (1, 0, 1, 1): "Phase AB + Ground",
-    (1, 1, 0, 0): "Phase C + Ground",
-    (1, 1, 0, 1): "Phase AC + Ground",
-    (1, 1, 1, 0): "Phase BC + Ground",
     (1, 1, 1, 1): "Three Phase + Ground",
 }
 
