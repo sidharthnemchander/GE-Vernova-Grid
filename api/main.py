@@ -30,7 +30,10 @@ app = FastAPI(
 # Allow React frontend to call this API
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+    "http://localhost:5173",
+    "https://gridmind-lh22.onrender.com",
+],
     allow_methods=["*"],
     allow_headers=["*"],
 )
