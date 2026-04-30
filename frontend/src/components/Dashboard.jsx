@@ -13,7 +13,9 @@ function useRealSensors() {
   useEffect(() => {
     const poll = async () => {
       try {
-        const sampleRes = await fetch("http://localhost:8000/sample-window/");
+        const sampleRes = await fetch(
+          `${import.meta.env.VITE_API_URL || "http://localhost:8000"}/sample-window/`,
+        );
         const sampleData = await sampleRes.json();
 
         if (sampleData.error) throw new Error(sampleData.error);

@@ -76,7 +76,7 @@ export default function Predict() {
       const isFaultLike =
         Math.abs(values.Ia) > 250 || Math.abs(values.Va) > 0.35;
       const sampleRes = await fetch(
-        `http://localhost:8000/sample-window/?fault=${isFaultLike}`,
+        `${import.meta.env.VITE_API_URL || "http://localhost:8000"}/sample-window/?fault=${isFaultLike}`,
       );
       const sampleData = await sampleRes.json();
 

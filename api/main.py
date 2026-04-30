@@ -35,6 +35,7 @@ app.add_middleware(
     "https://gridmind-lh22.onrender.com",
     "https://gridmind-alpha.vercel.app",
 ],
+    allow_credentials = True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
