@@ -33,6 +33,7 @@ app.add_middleware(
     allow_origins=[
     "http://localhost:5173",
     "https://gridmind-lh22.onrender.com",
+    "https://gridmind-alpha.vercel.app",
 ],
     allow_methods=["*"],
     allow_headers=["*"],
