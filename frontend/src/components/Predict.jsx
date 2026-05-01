@@ -153,18 +153,6 @@ export default function Predict() {
                 ))}
               </div>
 
-              <div
-                style={{
-                  marginTop: 8,
-                  fontSize: 11,
-                  color: "var(--text-secondary)",
-                  marginBottom: 16,
-                }}
-              >
-                ↳ Reading will be repeated ×10 to satisfy LSTM window
-                requirement
-              </div>
-
               <button
                 className="btn btn-primary"
                 onClick={handlePredict}

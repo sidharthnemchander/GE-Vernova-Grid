@@ -4,6 +4,7 @@ import { api, formatTime, severityClass } from "../lib/api";
 export default function Alerts() {
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [copiedId, setCopiedId] = useState(null);
 
   const refresh = () => {
     setLoading(true);
@@ -19,6 +20,18 @@ export default function Alerts() {
     const t = setInterval(refresh, 10000);
     return () => clearInterval(t);
   }, []);
+
+  const handleCopy = (alert) => {
+    if (!alert.sensor_readings) return; // Failsafe if backend hasn't captured data yet
+
+    // Copy the raw sensor data formatted nicely
+    const dataStr = JSON.stringify(alert.sensor_readings, null, 2);
+    navigator.clipboard.writeText(dataStr);
+
+    // Show the checkmark for 2 seconds
+    setCopiedId(alert.alert_id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
 
   const critCount = alerts.filter(
     (a) => severityClass(a.severity) === "critical",
@@ -79,7 +92,7 @@ export default function Alerts() {
 
           {!loading && alerts.length > 0 && (
             <>
-              {/* Table header */}
+              {/* Table header (Kept to 6 exact columns) */}
               <div
                 style={{
                   display: "grid",
@@ -124,24 +137,52 @@ export default function Alerts() {
                     #{a.alert_id}
                   </div>
                   <div className="alert-time">{formatTime(a.timestamp)}</div>
-                  <div className="alert-sensors">
-                    {a.top_sensors?.map((s) => (
-                      <span key={s.sensor} style={{ marginRight: 8 }}>
-                        <span style={{ color: "var(--amber)" }}>
-                          {s.sensor}
+
+                  <div
+                    className="alert-sensors"
+                    style={{ display: "flex", alignItems: "center", gap: 8 }}
+                  >
+                    <div>
+                      {a.top_sensors?.map((s) => (
+                        <span key={s.sensor} style={{ marginRight: 8 }}>
+                          <span style={{ color: "var(--amber)" }}>
+                            {s.sensor}
+                          </span>
+                          <span
+                            style={{
+                              color: "var(--text-secondary)",
+                              fontSize: 10,
+                            }}
+                          >
+                            {" "}
+                            {s.direction?.split(" ")[0]}
+                          </span>
                         </span>
-                        <span
-                          style={{
-                            color: "var(--text-secondary)",
-                            fontSize: 10,
-                          }}
-                        >
-                          {" "}
-                          {s.direction?.split(" ")[0]}
-                        </span>
-                      </span>
-                    )) || "—"}
+                      )) || "—"}
+                    </div>
+
+                    {a.sensor_readings && (
+                      <button
+                        className="btn btn-ghost"
+                        style={{
+                          fontSize: 14,
+                          padding: "2px 6px",
+                          background: "var(--bg-secondary)",
+                          border: "1px solid var(--border)",
+                          borderRadius: 4,
+                          cursor: "pointer",
+                          marginLeft: 8,
+                        }}
+                        onClick={() => handleCopy(a)}
+                        title="Copy raw JSON data"
+                      >
+                        {copiedId === a.alert_id
+                          ? "READING COPIED"
+                          : "COPY READING"}
+                      </button>
+                    )}
                   </div>
+
                   <div
                     style={{
                       fontSize: 11,

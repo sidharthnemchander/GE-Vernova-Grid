@@ -38,6 +38,9 @@ async def predict_fault(payload: BatchReadings):
      # ── Auto-log to alert store if fault detected 
     if result["is_fault"]:
         _alert_counter += 1
+
+        last_reading = payload.readings[-1].model_dump()
+
         _alert_store.append(AlertRecord(
             alert_id    = _alert_counter,
             is_fault    = True,
@@ -45,6 +48,7 @@ async def predict_fault(payload: BatchReadings):
             confidence  = result["confidence"],
             top_sensors = [SensorContribution(**s) for s in result["top_sensors"]],
             timestamp   = datetime.now(timezone.utc).isoformat(),
+            sensor_readings = last_reading,
         ))
 
     return PredictionResponse(

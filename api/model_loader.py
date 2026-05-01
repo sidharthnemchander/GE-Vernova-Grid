@@ -5,11 +5,12 @@ import pandas as pd
 import joblib
 import numpy as np
 import torch
-from dataclasses import dataclass, field
+import json
+from dataclasses import dataclass
 from sklearn.ensemble import IsolationForest
 from sklearn.preprocessing import MinMaxScaler
 
-from ml.lstm_model import LSTMAutoencoder, get_reconstruction_errors, set_threshold
+from ml.lstm_model import LSTMAutoencoder, get_reconstruction_errors
 from ml.isolation_forest import get_anomaly_scores
 from ml.hybrid import hybrid_predict, classify_severity
 from ml.explainability import explain_with_shap, get_top_contributing_sensors
@@ -30,6 +31,8 @@ class ModelStore:
     shap_values: np.ndarray      |None  = None
     threshold:   float            = 0.0
     loaded:      bool             = False
+    train_err_min : float = 0.0
+    train_err_max : float = 0.0
 
 
 store = ModelStore()
@@ -71,6 +74,19 @@ def load_all_models() -> None:
     else:
         store.threshold = 0.00678  # fallback from your training output
     print(f"   Threshold loaded: {store.threshold:.5f}")
+
+    metadata_path = os.path.join(MODELS_DIR, "lstm_metadata.json")
+
+    if os.path.exists(metadata_path):
+        with open(metadata_path, "r") as f:
+            metadata = json.load(f)
+            
+        store.train_err_min = metadata["train_err_min"]
+        store.train_err_max = metadata["train_err_max"]
+        
+        print(" LSTM Metadata (Threshold, Min, Max) loaded successfully!")
+    else:
+        print(" WARNING: lstm_metadata.json not found. Run training script first.")
 
     store.loaded = True
     print(" All models ready\n")

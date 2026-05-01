@@ -13,8 +13,10 @@ function useRealSensors() {
   useEffect(() => {
     const poll = async () => {
       try {
+        const isFault = Math.random() < 0.4;
+        const base = import.meta.env.VITE_API_URL || "http://localhost:8000";
         const sampleRes = await fetch(
-          `${import.meta.env.VITE_API_URL || "http://localhost:8000"}/sample-window/`,
+          `${base}/sample-window/?fault=${isFault}`,
         );
         const sampleData = await sampleRes.json();
 
@@ -209,29 +211,36 @@ export default function Dashboard() {
         </div>
 
         {/* Live waveforms — fed from real /predict/ poll history */}
+        {/* Live values — waveforms removed for cleaner UI */}
         <div className="three-col">
           {[
             {
               label: "Phase A Current (Ia)",
               data: IaData,
-              col: "var(--amber)",
+              col: "#FFBF00",
             },
-            { label: "Phase C Current (Ic)", data: IcData, col: "var(--blue)" },
+            {
+              label: "Phase C Current (Ic)",
+              data: IcData,
+              col: "#2196F3",
+            },
             {
               label: "Phase A Voltage (Va)",
               data: VaData,
-              col: "var(--green)",
+              col: "#4CAF50",
             },
           ].map(({ label, data, col }) => (
             <div className="card" key={label}>
               <div className="card-title">{label}</div>
-              <MiniChart data={data} color={col} />
               <div
                 style={{
                   fontFamily: "var(--font-display)",
-                  fontSize: 18,
+                  fontSize: 36,
+                  fontWeight: "bold",
+                  textAlign: "center",
                   color: col,
-                  marginTop: 8,
+                  marginTop: 24,
+                  marginBottom: 16,
                 }}
               >
                 {data.length ? data[data.length - 1].toFixed(3) : "—"}

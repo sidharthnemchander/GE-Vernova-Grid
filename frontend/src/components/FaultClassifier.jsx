@@ -3,14 +3,13 @@ import { api } from "../lib/api";
 
 const SENSOR_COLS = ["Ia", "Ib", "Ic", "Va", "Vb", "Vc"];
 
-// Keys now EXACTLY match your dataset strings
 const FAULT_COLORS = {
-  "No Fault": "#22c55e", // green
-  "Phase A + Ground": "#f59e0b", // amber
-  "Phase AB + Ground": "#ef4444", // red
-  "Phase ABC Fault": "#8b5cf6", // purple
-  "Phase BC Fault": "#3b82f6", // blue
-  "Three Phase + Ground": "#ec4899", // pink
+  "No Fault": "#22c55e",
+  "Phase A + Ground": "#f59e0b",
+  "Phase AB + Ground": "#ef4444",
+  "Phase ABC Fault": "#8b5cf6",
+  "Phase BC Fault": "#3b82f6",
+  "Three Phase + Ground": "#ec4899",
 };
 
 const SAMPLE_READINGS = [
@@ -69,7 +68,35 @@ export default function FaultClassifier() {
     }
   };
 
-  // Uses the exact string to grab the color, defaulting to gray if not found
+  const handlePaste = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      const parsed = JSON.parse(text);
+
+      const newValues = { ...values };
+      let hasValidKeys = false;
+
+      // Extract only the sensor keys we care about
+      SENSOR_COLS.forEach((col) => {
+        if (parsed[col] !== undefined) {
+          newValues[col] = parseFloat(parsed[col]) || 0;
+          hasValidKeys = true;
+        }
+      });
+
+      if (hasValidKeys) {
+        setValues(newValues);
+        setResult(null);
+        setError(null);
+      } else {
+        setError(
+          "Clipboard JSON does not match expected sensor format (Ia, Va, etc.).",
+        );
+      }
+    } catch (err) {
+      setError("Failed to read clipboard. Ensure you copied valid JSON.");
+    }
+  };
   const faultColor = result
     ? FAULT_COLORS[result.fault_type] || "#9ca3af"
     : "#9ca3af";
@@ -91,13 +118,14 @@ export default function FaultClassifier() {
             <div className="card">
               <div className="card-title">Sensor Reading</div>
 
-              {/* Quick samples */}
+              {/* Quick samples + Paste Button */}
               <div
                 style={{
                   display: "flex",
                   gap: 8,
                   marginBottom: 20,
                   flexWrap: "wrap",
+                  alignItems: "center",
                 }}
               >
                 {SAMPLE_READINGS.map((s) => (
@@ -108,11 +136,35 @@ export default function FaultClassifier() {
                     onClick={() => {
                       setValues(s.values);
                       setResult(null);
+                      setError(null);
                     }}
                   >
                     {s.label}
                   </button>
                 ))}
+
+                <div
+                  style={{
+                    width: 1,
+                    height: 16,
+                    background: "var(--border)",
+                    margin: "0 4px",
+                  }}
+                />
+
+                <button
+                  className="btn btn-ghost"
+                  style={{
+                    fontSize: 10,
+                    padding: "5px 12px",
+                    color: "var(--amber)",
+                    fontWeight: "bold",
+                  }}
+                  onClick={handlePaste}
+                  title="Paste copied JSON from Alert Log"
+                >
+                  PASTE READING
+                </button>
               </div>
 
               <div className="field-row">

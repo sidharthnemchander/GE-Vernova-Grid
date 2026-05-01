@@ -55,6 +55,7 @@ class AlertRecord(BaseModel):
     confidence: float
     top_sensors: list[SensorContribution]
     timestamp: str
+    sensor_readings : dict | None = None
 
 
 class FaultTypeResponse(BaseModel):

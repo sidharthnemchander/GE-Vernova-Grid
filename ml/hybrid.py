@@ -6,13 +6,15 @@ def hybrid_predict(
     lstm_threshold: float,
 ) -> tuple[np.ndarray, np.ndarray]:
     
-
+    from api.model_loader import store
     lstm_labels = (lstm_errors > lstm_threshold).astype(int)
     combined = np.logical_and(if_labels, lstm_labels).astype(int)
 
     # Normalize LSTM error to 0–1 for a confidence score
-    err_min, err_max = lstm_errors.min(), lstm_errors.max()
+    err_min = store.train_err_min
+    err_max = store.train_err_max
     normalized_error = (lstm_errors - err_min) / (err_max - err_min + 1e-8)
+    normalized_error = np.clip(normalized_error, 0.0, 1.0)
     confidence = np.where(combined == 1, normalized_error, 0.0)
 
     return combined, confidence

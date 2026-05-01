@@ -3,10 +3,10 @@ import { useEffect, useState } from "react";
 import { api } from "../lib/api";
 
 const NAV = [
-  { id: "dashboard", label: "Overview", icon: "⬡" },
-  { id: "predict", label: "Diagnose", icon: "◈" },
-  { id: "alerts", label: "Alert Log", icon: "◉" },
-  { id: "classify", label: "Fault Type", icon: "◫" },
+  { id: "dashboard", label: "Overview" },
+  { id: "predict", label: "Diagnose" },
+  { id: "alerts", label: "Alert Log" },
+  { id: "classify", label: "Fault Type" },
 ];
 
 export default function Sidebar({ current, onNav }) {
@@ -30,7 +30,6 @@ export default function Sidebar({ current, onNav }) {
     <aside className="sidebar">
       <div className="sidebar-logo">
         <div className="logo-mark">GridMind</div>
-        <div className="logo-sub">Grid Intelligence v1.0</div>
       </div>
 
       <nav className="sidebar-nav">
