@@ -54,16 +54,6 @@ export default function Sidebar({ current, onNav }) {
         >
           {alive ? "API ONLINE" : "API OFFLINE"}
         </div>
-        <div
-          style={{
-            fontSize: 10,
-            color: "var(--text-secondary)",
-            marginTop: 8,
-            letterSpacing: 1,
-          }}
-        >
-          GE VERNOVA · DTDP SHOWCASE
-        </div>
       </div>
     </aside>
   );

@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
+from fastapi import Request
 from fastapi.middleware.cors import CORSMiddleware
 from api.model_loader import load_all_models, store
 from api.schemas import HealthResponse
@@ -47,14 +48,13 @@ app.include_router(alerts.router)
 app.include_router(fault_type.router)
 
 
-@app.get("/health", response_model=HealthResponse, tags=["System"])
-async def health_check():
-    """Quick check that the API and models are alive."""
+@app.api_route("/health", methods=["GET", "HEAD"], response_model=HealthResponse, tags=["System"])
+async def health_check(request: Request):
     return HealthResponse(
-        status        = "operational",
-        models_loaded = store.loaded,
-        threshold     = store.threshold,
-        version       = "1.0.0",
+        status="operational",
+        models_loaded=store.loaded,
+        threshold=store.threshold,
+        version="1.0.0",
     )
 
 @app.get("/sample-window/")
